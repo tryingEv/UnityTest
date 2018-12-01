@@ -2,6 +2,7 @@
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <LangVersion>4</LangVersion>
+    <ProjectTypeGuids>{E097FAD1-6243-4DAD-9C02-E9B9EFC3FFC1};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
   </PropertyGroup>
   <PropertyGroup>
@@ -46,13 +47,6 @@
     <ImplicitlyExpandNETStandardFacades>false</ImplicitlyExpandNETStandardFacades>
     <ImplicitlyExpandDesignTimeFacades>false</ImplicitlyExpandDesignTimeFacades>
   </PropertyGroup>
-  <PropertyGroup>
-    <ProjectTypeGuids>{E097FAD1-6243-4DAD-9C02-E9B9EFC3FFC1};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <UnityProjectGenerator>Unity/VSTU</UnityProjectGenerator>
-    <UnityProjectType>Editor:5</UnityProjectType>
-    <UnityBuildTarget>StandaloneOSX:2</UnityBuildTarget>
-    <UnityVersion>2018.2.13f1</UnityVersion>
-  </PropertyGroup>
   <ItemGroup>
     <Reference Include="UnityEngine">
       <HintPath>/Applications/Unity/Unity.app/Contents/Managed/UnityEngine/UnityEngine.dll</HintPath>
@@ -62,7 +56,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\Editor\AddFileHeadComment.cs" />
+    <Compile Include="Assets\Editor\AssetsEventHandler.cs" />
     <Compile Include="Assets\Editor\EditorTest.cs" />
+    <Compile Include="Assets\Editor\MyEditorWindow.cs" />
     <Reference Include="UnityEditor.StandardEvents">
       <HintPath>/Users/hellotree/gameDev/unityProject/UnityTest/Project/Library/ScriptAssemblies/UnityEditor.StandardEvents.dll</HintPath>
     </Reference>
@@ -324,6 +321,9 @@
     <Reference Include="UnityEditor.OSXStandalone.Extensions">
       <HintPath>/Applications/Unity/Unity.app/Contents/PlaybackEngines/MacStandaloneSupport/UnityEditor.OSXStandalone.Extensions.dll</HintPath>
     </Reference>
+    <Reference Include="JetBrains.Rider.Unity.Editor.Plugin.Repacked">
+      <HintPath>/Users/hellotree/gameDev/unityProject/UnityTest/Project/Assets/Plugins/Editor/JetBrains/JetBrains.Rider.Unity.Editor.Plugin.Repacked.dll</HintPath>
+    </Reference>
     <Reference Include="UnityEditor.Advertisements">
       <HintPath>/Users/hellotree/Library/Unity/cache/packages/packages.unity.com/com.unity.ads@2.0.8/Editor/UnityEditor.Advertisements.dll</HintPath>
     </Reference>
@@ -338,12 +338,6 @@
     </Reference>
     <Reference Include="UnityEngine.StandardEvents">
       <HintPath>/Users/hellotree/Library/Unity/cache/packages/packages.unity.com/com.unity.standardevents@1.0.13/UnityEngine.StandardEvents.dll</HintPath>
-    </Reference>
-    <Reference Include="SyntaxTree.VisualStudio.Unity.Bridge">
-      <HintPath>/Applications/Visual Studio.app/Contents/Resources/lib/monodevelop/AddIns/MonoDevelop.Unity/Editor/SyntaxTree.VisualStudio.Unity.Bridge.dll</HintPath>
-    </Reference>
-    <Reference Include="JetBrains.Rider.Unity.Editor.Plugin.Repacked">
-      <HintPath>/Users/hellotree/gameDev/unityProject/UnityTest/Project/Assets/Plugins/Editor/JetBrains/JetBrains.Rider.Unity.Editor.Plugin.Repacked.dll</HintPath>
     </Reference>
     <Reference Include="UnityEditor.iOS.Extensions.Xcode">
       <HintPath>/Applications/Unity/PlaybackEngines/iOSSupport/UnityEditor.iOS.Extensions.Xcode.dll</HintPath>
@@ -380,7 +374,6 @@
     </Reference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Target Name="GenerateTargetFrameworkMonikerAttribute" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
