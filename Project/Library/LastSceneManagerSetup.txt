@@ -1,4 +1,0 @@
-sceneSetups:
-- path: Assets/Scene/EditorExtensionTest.unity
-  isLoaded: 1
-  isActive: 1
