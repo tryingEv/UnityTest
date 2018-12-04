@@ -65,7 +65,7 @@ public class AssetsEventHandler : UnityEditor.AssetModificationProcessor
     public static AssetMoveResult OnWillMoveAsset(string assetPath, string targetPath)
     {
         Debug.Log("---- move asset, path = " + assetPath + ", targetPath = " + targetPath);
-        return AssetMoveResult.DidMove;
+        return AssetMoveResult.DidNotMove;
     }
 
     /// <summary>
