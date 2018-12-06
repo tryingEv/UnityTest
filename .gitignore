@@ -5,3 +5,11 @@ Project/Temp
 Project/Library
 Project/.vs
 Project/obj
+
+Project/Assets/StreamingAssets/
+
+*.csproj
+
+*.sln
+
+Project/Project\.sln\.DotSettings\.user

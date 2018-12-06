@@ -20,7 +20,7 @@ public class AssetsEventHandler : UnityEditor.AssetModificationProcessor
     {
         msg = null;
         string fileName = GetFileName(assetPath).Replace(".meta", string.Empty);
-        Debug.Log("---- IsOpenForEdit asstePath = " + assetPath + ", file name = " + fileName);//---- IsOpenForEdit asstePath = Assets/scene/EditorExtensionTest.unity.meta
+//        Debug.Log("---- IsOpenForEdit asstePath = " + assetPath + ", file name = " + fileName);//---- IsOpenForEdit asstePath = Assets/scene/EditorExtensionTest.unity.meta
         int index = fileName.LastIndexOf('.');
         if (index >= 0)
         {
@@ -41,7 +41,7 @@ public class AssetsEventHandler : UnityEditor.AssetModificationProcessor
     public static void OnWillCreateAsset(string assetName)
     {
         AddFileHeadComment.AddFileHead(assetName);
-        Debug.Log("----- create asset, name is " + assetName);
+//        Debug.Log("----- create asset, name is " + assetName);
     }
 
     /// <summary>
@@ -50,7 +50,7 @@ public class AssetsEventHandler : UnityEditor.AssetModificationProcessor
     /// <param name="assetName"></param>
     public static AssetDeleteResult OnWillDeleteAsset(string assetName, RemoveAssetOptions options)
     {
-        Debug.Log("----- delete file, name is " + assetName);
+//        Debug.Log("----- delete file, name is " + assetName);
         //return AssetDeleteResult.DidDelete;//不可删除
 
         return AssetDeleteResult.DidNotDelete; //可以删除
@@ -64,7 +64,7 @@ public class AssetsEventHandler : UnityEditor.AssetModificationProcessor
     /// <returns></returns>
     public static AssetMoveResult OnWillMoveAsset(string assetPath, string targetPath)
     {
-        Debug.Log("---- move asset, path = " + assetPath + ", targetPath = " + targetPath);
+//        Debug.Log("---- move asset, path = " + assetPath + ", targetPath = " + targetPath);
         return AssetMoveResult.DidNotMove;
     }
 
@@ -77,7 +77,7 @@ public class AssetsEventHandler : UnityEditor.AssetModificationProcessor
     {
         foreach (var p in path)
         {
-            Debug.Log("save path is " + p);
+//            Debug.Log("save path is " + p);
         }
         return path;
     }
