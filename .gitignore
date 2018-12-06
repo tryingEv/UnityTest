@@ -13,3 +13,7 @@ Project/Assets/StreamingAssets/
 *.sln
 
 Project/Project\.sln\.DotSettings\.user
+
+Project/UnityPackageManager/
+
+Project/Assets/StreamingAssets\.meta
