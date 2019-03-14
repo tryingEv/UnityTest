@@ -14,87 +14,83 @@ using UnityEngine;
 
 public class BuildAssetBundle
 {
-    public const string ASSETBUNDLE_FLODER = "StreamingAssets";
-
-    private static readonly List<string> _dependMaterials = new List<string>();
-
-    [MenuItem("Build AssetBundle/BuildModel")]
-    public static void StartBuildModelAssetBundle()
+    [MenuItem("Build AssetBundle/Prefab in ShaderArt directory")]
+    public static void BuildShaderArtAssetBundle()
     {
-        var assetBundlePath = Path.Combine(Application.dataPath, ASSETBUNDLE_FLODER);
-        if (!Directory.Exists(assetBundlePath)) Directory.CreateDirectory(assetBundlePath);
-
-        var list = new AssetBundleBuild[1];
-        var abuild = new AssetBundleBuild();
-        abuild.assetNames = new[] {"Assets/Prefabs/Bamboo3.prefab", "Assets/Prefabs/B-Boy_Player.prefab"};
-        abuild.assetBundleName = "Amodels";
-        list[0] = abuild;
-        BuildPipeline.BuildAssetBundles(assetBundlePath, list, BuildAssetBundleOptions.ChunkBasedCompression,
-            BuildTarget.Android);
-    }
-
-    [MenuItem("Build AssetBundle/Cube and Sphere")]
-    public static void StartBuildCubeAssetsBundle()
-    {
-        var path = Path.Combine(Application.dataPath, "Resource/Prefabs/TestAssetsBundle").Replace("\\", "/");
-        var files = Directory.GetFiles(path);
-        _dependMaterials.Clear();
-        var assetBundlePath = Path.Combine(Application.dataPath, ASSETBUNDLE_FLODER).Replace("\\", "/");
-        if (!Directory.Exists(assetBundlePath)) Directory.CreateDirectory(assetBundlePath);
-
-        foreach (var fpath in files)
+        string rootDirectory = string.Format("{0}/ShaderArt/Prefab", Application.dataPath) ;
+        if (!Directory.Exists(rootDirectory))
         {
-            var filePath = fpath.Replace(Application.dataPath, "Assets").Replace("\\", "/");
-            var fileType = Path.GetExtension(filePath);
-            if (fileType.Equals(".meta")) continue;
-            Debug.Log("---- file path " + filePath);
-            var obj = AssetDatabase.LoadAssetAtPath(filePath, typeof(GameObject)) as GameObject;
-            if (null == obj) continue;
-            var render = obj.GetComponent<MeshRenderer>();
-            if (null == render) continue;
-            var mats = render.sharedMaterials;
-            if (null != mats)
-                foreach (var mat in mats)
-                {
-                    var texture = mat.mainTexture;
-                    if (null != texture)
-                    {
-                        var texturePath = string.Format("Assets/Art/Textures/{0}.psd", texture.name.ToUpper());
-                        if (!_dependMaterials.Contains(texturePath))
-                        {
-                            _dependMaterials.Add(texturePath);
-                            BuildAssetBundleInStreamingAssetsFloder(texturePath);
-                        }
-                    }
-
-//                    var materialName = mat.name;
-//                    if(string.IsNullOrEmpty(materialName)) continue;
-//                    var materialPath = string.Format("Assets/Art/Material/{0}.mat", materialName);
-//                    if (!_dependMaterials.Contains(materialPath))
-//                    {
-//                        _dependMaterials.Add(materialPath);
-//                    }
-//
-//                    BuildAssetBundleInStreamingAssetsFloder(materialPath);
-                }
+            Debug.LogError("root directory is not exist");
+            return;
         }
 
-        foreach (var file in files)
+        Dictionary<string, List<string>> dependDict = new Dictionary<string, List<string>>();
+        string[] prefabsPath = Directory.GetFiles(rootDirectory, "*.prefab");
+        foreach (var file in prefabsPath)
         {
-            var filePath = file.Replace(Application.dataPath, "Assets").Replace("\\", "/");
-            BuildAssetBundleInStreamingAssetsFloder(filePath);
+            var path = file.Replace("//", "/").Replace("\\", "/");
+            if (!File.Exists(path))
+                continue;
+
+            var rootFile = path.Replace(Application.dataPath, "Assets");
+            FindTargetFileDependFiles(rootFile, ref dependDict);
         }
+        Debug.Log("dependDict count " + dependDict.Count);
+
+        if (dependDict.Count <= 0)
+        {
+            Debug.LogError("not found gameObject need to build");
+            return;
+        }
+        AssetBundleBuild[] bundles = new AssetBundleBuild[dependDict.Count];
+        int index = 0;
+        foreach (var dvalue in dependDict)
+        {
+            var key = dvalue.Key;
+            var list = dvalue.Value;
+            bundles[index] = new AssetBundleBuild() { assetBundleName = key, assetNames = list.ToArray()};
+            index++;
+        }
+        string output = "AssetsBundle/ShaderTest";
+        var fullPath = string.Format("{0}/{1}", Application.dataPath, output);
+        if (!Directory.Exists(fullPath))
+        {
+            Directory.CreateDirectory(fullPath);
+        }
+        BuildPipeline.BuildAssetBundles(string.Format("Assets/{0}", output), bundles, BuildAssetBundleOptions.ChunkBasedCompression, BuildTarget.Android);
     }
 
-    public static void BuildAssetBundleInStreamingAssetsFloder(string fileName)
-    {
-        if (string.IsNullOrEmpty(fileName)) return;
 
-        var bundlePath = "Assets/StreamingAssets";
-        var filePath = fileName.Replace(Application.dataPath, "Assets").Replace("\\", "/");
-        var assetBundleBuild = new AssetBundleBuild
-            {assetBundleName = Path.GetFileName(filePath), assetNames = new[] {filePath}};
-        BuildPipeline.BuildAssetBundles(bundlePath, new[] {assetBundleBuild},
-            BuildAssetBundleOptions.ChunkBasedCompression, BuildTarget.Android);
+    public static void FindTargetFileDependFiles(string targetFilePath, ref Dictionary<string, List<string>> dependDict)
+    {
+        string[] dependFiles = AssetDatabase.GetDependencies(targetFilePath);
+        foreach (var fileName in dependFiles)
+        {
+            if (fileName.Contains(targetFilePath))
+                continue;
+
+            int index = fileName.LastIndexOf("/");
+            if (index < 0)
+                continue;
+
+            var floderName = Path.GetDirectoryName(fileName).Replace("Assets/", "");
+            if (dependDict.ContainsKey(floderName))
+            {
+                List<string> list = dependDict[floderName];
+                if (null == list)
+                    continue;
+
+                if (list.Contains(fileName))
+                    continue;
+
+                list.Add(fileName);
+            }
+            else
+            {
+                dependDict.Add(floderName, new List<string>() { fileName });
+            }
+
+            //FindTargetFileDependFiles(fileName, ref dependDict);
+        }
     }
 }
