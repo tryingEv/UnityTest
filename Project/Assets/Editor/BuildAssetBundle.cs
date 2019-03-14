@@ -7,35 +7,31 @@
 *History:         
 *****************************************************************/
 
-using System;
-using UnityEditor;
-using System.IO;
-using UnityEngine;
 using System.Collections.Generic;
+using System.IO;
+using UnityEditor;
+using UnityEngine;
 
 public class BuildAssetBundle
 {
     public const string ASSETBUNDLE_FLODER = "StreamingAssets";
 
+    private static readonly List<string> _dependMaterials = new List<string>();
+
     [MenuItem("Build AssetBundle/BuildModel")]
     public static void StartBuildModelAssetBundle()
     {
-        string assetBundlePath = Path.Combine(Application.dataPath, ASSETBUNDLE_FLODER);
-        if (!Directory.Exists(assetBundlePath))
-        {
-            Directory.CreateDirectory(assetBundlePath);
-        }
+        var assetBundlePath = Path.Combine(Application.dataPath, ASSETBUNDLE_FLODER);
+        if (!Directory.Exists(assetBundlePath)) Directory.CreateDirectory(assetBundlePath);
 
-        AssetBundleBuild[] list = new AssetBundleBuild[1];
-        AssetBundleBuild abuild = new AssetBundleBuild();
-        abuild.assetNames = new string[] {"Assets/Prefabs/Bamboo3.prefab", "Assets/Prefabs/B-Boy_Player.prefab"};
+        var list = new AssetBundleBuild[1];
+        var abuild = new AssetBundleBuild();
+        abuild.assetNames = new[] {"Assets/Prefabs/Bamboo3.prefab", "Assets/Prefabs/B-Boy_Player.prefab"};
         abuild.assetBundleName = "Amodels";
         list[0] = abuild;
         BuildPipeline.BuildAssetBundles(assetBundlePath, list, BuildAssetBundleOptions.ChunkBasedCompression,
             BuildTarget.Android);
     }
-
-    private static List<string> _dependMaterials = new List<string>();
 
     [MenuItem("Build AssetBundle/Cube and Sphere")]
     public static void StartBuildCubeAssetsBundle()
@@ -44,7 +40,7 @@ public class BuildAssetBundle
         var files = Directory.GetFiles(path);
         _dependMaterials.Clear();
         var assetBundlePath = Path.Combine(Application.dataPath, ASSETBUNDLE_FLODER).Replace("\\", "/");
-        if (!Directory.Exists(assetBundlePath))  Directory.CreateDirectory(assetBundlePath);
+        if (!Directory.Exists(assetBundlePath)) Directory.CreateDirectory(assetBundlePath);
 
         foreach (var fpath in files)
         {
@@ -53,25 +49,24 @@ public class BuildAssetBundle
             if (fileType.Equals(".meta")) continue;
             Debug.Log("---- file path " + filePath);
             var obj = AssetDatabase.LoadAssetAtPath(filePath, typeof(GameObject)) as GameObject;
-            if(null == obj) continue;
+            if (null == obj) continue;
             var render = obj.GetComponent<MeshRenderer>();
             if (null == render) continue;
             var mats = render.sharedMaterials;
             if (null != mats)
-            {
                 foreach (var mat in mats)
                 {
                     var texture = mat.mainTexture;
                     if (null != texture)
                     {
-                        string texturePath = string.Format("Assets/Art/Textures/{0}.psd", texture.name.ToUpper());
+                        var texturePath = string.Format("Assets/Art/Textures/{0}.psd", texture.name.ToUpper());
                         if (!_dependMaterials.Contains(texturePath))
                         {
                             _dependMaterials.Add(texturePath);
                             BuildAssetBundleInStreamingAssetsFloder(texturePath);
                         }
                     }
-                    
+
 //                    var materialName = mat.name;
 //                    if(string.IsNullOrEmpty(materialName)) continue;
 //                    var materialPath = string.Format("Assets/Art/Material/{0}.mat", materialName);
@@ -82,7 +77,6 @@ public class BuildAssetBundle
 //
 //                    BuildAssetBundleInStreamingAssetsFloder(materialPath);
                 }
-            }
         }
 
         foreach (var file in files)
@@ -95,11 +89,12 @@ public class BuildAssetBundle
     public static void BuildAssetBundleInStreamingAssetsFloder(string fileName)
     {
         if (string.IsNullOrEmpty(fileName)) return;
-        
-        string bundlePath = "Assets/StreamingAssets";
-        string filePath = fileName.Replace(Application.dataPath, "Assets").Replace("\\", "/");
-        AssetBundleBuild assetBundleBuild = new AssetBundleBuild(){assetBundleName = Path.GetFileName(filePath), assetNames = new string[]{filePath}};
-        BuildPipeline.BuildAssetBundles(bundlePath, new AssetBundleBuild[] {assetBundleBuild},
+
+        var bundlePath = "Assets/StreamingAssets";
+        var filePath = fileName.Replace(Application.dataPath, "Assets").Replace("\\", "/");
+        var assetBundleBuild = new AssetBundleBuild
+            {assetBundleName = Path.GetFileName(filePath), assetNames = new[] {filePath}};
+        BuildPipeline.BuildAssetBundles(bundlePath, new[] {assetBundleBuild},
             BuildAssetBundleOptions.ChunkBasedCompression, BuildTarget.Android);
     }
 }

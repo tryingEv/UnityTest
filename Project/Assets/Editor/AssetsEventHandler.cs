@@ -1,17 +1,16 @@
 ﻿using UnityEditor;
-using UnityEngine;
 
 public class AssetsEventHandler : UnityEditor.AssetModificationProcessor
 {
     private static string GetFileName(string path)
     {
         if (string.IsNullOrEmpty(path)) return null;
-        int index = path.LastIndexOf('/');
+        var index = path.LastIndexOf('/');
         return path.Substring(index + 1);
     }
 
     /// <summary>
-    /// 选中文件后，如果返回true则在Inspector面板中会显示信息，否则不显示
+    ///     选中文件后，如果返回true则在Inspector面板中会显示信息，否则不显示
     /// </summary>
     /// <param name="assetPath"></param>
     /// <param name="msg"></param>
@@ -19,23 +18,24 @@ public class AssetsEventHandler : UnityEditor.AssetModificationProcessor
     public static bool IsOpenForEdit(string assetPath, out string msg)
     {
         msg = null;
-        string fileName = GetFileName(assetPath).Replace(".meta", string.Empty);
+        var fileName = GetFileName(assetPath).Replace(".meta", string.Empty);
 //        Debug.Log("---- IsOpenForEdit asstePath = " + assetPath + ", file name = " + fileName);//---- IsOpenForEdit asstePath = Assets/scene/EditorExtensionTest.unity.meta
-        int index = fileName.LastIndexOf('.');
+        var index = fileName.LastIndexOf('.');
         if (index >= 0)
         {
-            string type = fileName.Substring(index + 1);
+            var type = fileName.Substring(index + 1);
             switch (type)
             {
                 case "unity":
                     return false;
             }
         }
+
         return true;
     }
 
     /// <summary>
-    /// 创建文件时候会调用
+    ///     创建文件时候会调用
     /// </summary>
     /// <param name="assetName"></param>
     public static void OnWillCreateAsset(string assetName)
@@ -45,7 +45,7 @@ public class AssetsEventHandler : UnityEditor.AssetModificationProcessor
     }
 
     /// <summary>
-    /// 删除文件时候会调用
+    ///     删除文件时候会调用
     /// </summary>
     /// <param name="assetName"></param>
     public static AssetDeleteResult OnWillDeleteAsset(string assetName, RemoveAssetOptions options)
@@ -57,7 +57,7 @@ public class AssetsEventHandler : UnityEditor.AssetModificationProcessor
     }
 
     /// <summary>
-    /// 移动文件时会调用
+    ///     移动文件时会调用
     /// </summary>
     /// <param name="assetPath"></param>
     /// <param name="targetPath"></param>
@@ -69,7 +69,7 @@ public class AssetsEventHandler : UnityEditor.AssetModificationProcessor
     }
 
     /// <summary>
-    /// 保存文件调用
+    ///     保存文件调用
     /// </summary>
     /// <param name="path"></param>
     /// <returns></returns>
@@ -79,6 +79,7 @@ public class AssetsEventHandler : UnityEditor.AssetModificationProcessor
         {
 //            Debug.Log("save path is " + p);
         }
+
         return path;
     }
 }
