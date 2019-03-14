@@ -11,7 +11,8 @@
 		LOD 200
 
 		CGPROGRAM
-		#pragma surface surf MyLambert
+		//MyLambert 为自己的光照模型函数
+		#pragma surface surf MyLambert 
 		#pragma target 3.0
 		
 		float4 _MainColor;
@@ -45,6 +46,7 @@
 			o.Gloss = _Gloss;
 		}
 
+		//自己关照模型函数
 		fixed4 LightingMyLambert(LambertOutput o, fixed3 lightDir, half3 viewDir, fixed atten)
 		{
 			fixed4 c;
