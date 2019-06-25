@@ -15,31 +15,58 @@ public class AccelerationRotationCtrl : MonoBehaviour
 {
     public enum AccelerationType
     {
-        EPos = 1,   //移动
+        EMove = 1,   //移动
         ERotation,  //旋转
     }
 
     public AccelerationType OperType;
-    public Text LogText;
-    public Text LogText1;
-    #region 旋转操作设置
 
+    #region 旋转操作设置
+    /// <summary>
+    /// x, y, z三个轴的旋转范围
+    /// </summary>
     public Vector3 RotationRange = Vector3.zero; //x, y, z轴
+
+    /// <summary>
+    ///  x, y, z三个轴的旋转速度
+    /// </summary>
     public Vector3 RotationSpeed = Vector3.one; //x, y, z
 
     #endregion
 
     #region 移动操作设置
-    public Vector2 PosRange = Vector2.zero; //x, y轴
+    /// <summary>
+    /// 左右上下移动范围
+    /// </summary>
+    public Vector4 PosRange = Vector2.zero; //左右上下
+
+    /// <summary>
+    /// 水平方向和竖直方向移动速度
+    /// </summary>
     public Vector2 PosSpeed = Vector3.one; //x, y轴
     #endregion
 
 
     private Transform _trans;
+    /// <summary>
+    /// 上一次加速度值
+    /// </summary>
     private Vector3 _lastAcceleration = Vector3.zero;
+
+    /// <summary>
+    /// 起始位置
+    /// </summary>
     private Vector3 _startPos = Vector3.zero;
+
+    /// <summary>
+    /// 起始旋转角度
+    /// </summary>
     private Vector3 _startRotation = Vector3.zero;
-    private const float maxAccelerationValue = 0.4f;    //加速度最大值
+
+    /// <summary>
+    /// 最大加速度
+    /// </summary>
+    private const float maxAccelerationValue = 0.3f;    //加速度最大值
 
 
     #region 更新逻辑
@@ -50,8 +77,6 @@ public class AccelerationRotationCtrl : MonoBehaviour
 
         Vector3 acceleration = GetAcceleration();
 
-        LogText.text = string.Format("{0} : {1} : {2}", acceleration.x, acceleration.y, acceleration.z);
-
         if (_lastAcceleration.x == acceleration.x && _lastAcceleration.y == acceleration.y && _lastAcceleration.z == acceleration.z)
         {
             return;
@@ -59,10 +84,10 @@ public class AccelerationRotationCtrl : MonoBehaviour
 
         switch (OperType)
         {
-            case AccelerationType.EPos:
+            case AccelerationType.EMove:
                 {
-                    float posx = GetTransValue(acceleration.x, _startPos.x, PosRange.x, PosSpeed.x);
-                    float posy = GetTransValue(acceleration.y, _startPos.y, PosRange.y, PosSpeed.y);
+                    float posx = GetTransValue(acceleration.x, _startPos.x, acceleration.x <= 0 ?  PosRange.x : PosRange.y, PosSpeed.x);
+                    float posy = GetTransValue(acceleration.y, _startPos.y, acceleration.y <= 0 ? PosRange.w : PosRange.z, PosSpeed.y);
                     Vector3 pos = _trans.localPosition;
                     pos.x = posx;
                     pos.y = posy;
@@ -78,8 +103,7 @@ public class AccelerationRotationCtrl : MonoBehaviour
                     rotation.x = ry;
                     rotation.y = -rx;
                     //rotation.z = rz;
-                    _trans.localRotation = Quaternion.Euler(rotation);
-                    LogText1.text = string.Format("{0} : {1} : {2}", rotation.x, rotation.y, rotation.z);
+                    _trans.localRotation = Quaternion.Lerp(_trans.localRotation, Quaternion.Euler(rotation), 0.3f) ;
                 }
                 break;
             default:
@@ -129,9 +153,9 @@ public class AccelerationRotationCtrl : MonoBehaviour
     private Vector3 GetAcceleration()
     {
         Vector3 acces = Input.acceleration;
-        acces.x = RoundFloat(acces.x);
-        acces.y = RoundFloat(acces.y);
-        acces.z = -RoundFloat(acces.z);
+        acces.x = RoundFloat(acces.x, 10);
+        acces.y = RoundFloat(acces.y, 10);
+        acces.z = -RoundFloat(acces.z, 10);
         return acces;
     }
 
